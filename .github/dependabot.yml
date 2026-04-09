@@ -1,0 +1,28 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly" # bisa daily / monthly
+    open-pull-requests-limit: 5
+
+    groups:
+      nestjs:
+        patterns:
+          - "@nestjs/*"
+      testing:
+        patterns:
+          - "jest*"
+          - "@types/*"
+      linting:
+        patterns:
+          - "eslint*"
+          - "prettier*"
+
+    allow:
+      - dependency-type: "all"
+
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]

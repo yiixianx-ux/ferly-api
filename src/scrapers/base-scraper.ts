@@ -1,4 +1,4 @@
-import { VideoBaseDto, VideoDetailDto, StreamInfoDto } from '../videos/dto/video.dto';
+import { VideoBaseDto, VideoDetailDto, StreamInfoDto } from '../videos/dto/video.dto.js';
 
 export abstract class BaseScraper {
   abstract readonly siteId: string;

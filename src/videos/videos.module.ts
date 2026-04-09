@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { VideosService } from './videos.service';
-import { VideosController } from './videos.controller';
-import { ScrapersModule } from '../scrapers/scrapers.module';
+import { VideosService } from './videos.service.js';
+import { VideosController } from './videos.controller.js';
+import { ScrapersModule } from '../scrapers/scrapers.module.js';
 
 @Module({
   imports: [ScrapersModule],

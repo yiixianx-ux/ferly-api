@@ -1,7 +1,7 @@
 import { Module, OnModuleInit } from '@nestjs/common';
-import { ScraperManager } from './scraper.manager';
-import { HStreamScraper } from './hstream.scraper';
-import { OppaiStreamScraper } from './oppai-stream.scraper';
+import { ScraperManager } from './scraper.manager.js';
+import { HStreamScraper } from './hstream.scraper.js';
+import { OppaiStreamScraper } from './oppai-stream.scraper.js';
 
 @Module({
   providers: [

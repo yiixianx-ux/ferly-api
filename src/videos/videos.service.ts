@@ -1,9 +1,9 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { DRIZZLE } from '../database/database.provider';
+import { DRIZZLE } from '../database/database.provider.js';
 import { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
-import * as schema from '../database/schema';
-import { ScraperManager } from '../scrapers/scraper.manager';
-import { VideoBaseDto, MultiSiteSearchResponseDto } from './dto/video.dto';
+import * as schema from '../database/schema.js';
+import { ScraperManager } from '../scrapers/scraper.manager.js';
+import { VideoBaseDto, MultiSiteSearchResponseDto } from './dto/video.dto.js';
 import { sql } from 'drizzle-orm';
 
 @Injectable()

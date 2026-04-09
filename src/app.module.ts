@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { LoggerModule } from 'nestjs-pino';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
 
-import { DatabaseModule } from './database/database.module';
-import { ScrapersModule } from './scrapers/scrapers.module';
-import { VideosModule } from './videos/videos.module';
-import { ProxyModule } from './proxy/proxy.module';
+import { DatabaseModule } from './database/database.module.js';
+import { ScrapersModule } from './scrapers/scrapers.module.js';
+import { VideosModule } from './videos/videos.module.js';
+import { ProxyModule } from './proxy/proxy.module.js';
 
 @Module({
   imports: [

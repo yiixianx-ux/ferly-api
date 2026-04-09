@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { VideosService } from './videos.service';
-import { ScraperManager } from '../scrapers/scraper.manager';
-import { DRIZZLE } from '../database/database.provider';
+import { VideosService } from './videos.service.js';
+import { ScraperManager } from '../scrapers/scraper.manager.js';
+import { DRIZZLE } from '../database/database.provider.js';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('VideosService', () => {

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { BaseScraper } from './base-scraper';
-import { VideoBaseDto, VideoDetailDto, StreamInfoDto } from '../videos/dto/video.dto';
+import { BaseScraper } from './base-scraper.js';
+import { VideoBaseDto, VideoDetailDto, StreamInfoDto } from '../videos/dto/video.dto.js';
 import got, { Got } from 'got';
 import * as cheerio from 'cheerio';
 

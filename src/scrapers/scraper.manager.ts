@@ -1,6 +1,6 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { BaseScraper } from './base-scraper';
-import { MultiSiteSearchResponseDto, VideoBaseDto } from '../videos/dto/video.dto';
+import { BaseScraper } from './base-scraper.js';
+import { MultiSiteSearchResponseDto, VideoBaseDto } from '../videos/dto/video.dto.js';
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
 
 @Injectable()

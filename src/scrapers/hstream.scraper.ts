@@ -7,12 +7,13 @@ import {
 } from '../videos/dto/video.dto.js';
 import got, { Got } from 'got';
 import * as cheerio from 'cheerio';
+import { CONFIG } from '../config.js';
 
 @Injectable()
 export class HStreamScraper extends BaseScraper {
   private readonly logger = new Logger(HStreamScraper.name);
   readonly siteId = 'hstream';
-  readonly baseUrl = 'https://hstream.moe';
+  readonly baseUrl = CONFIG.scrapers.hstream.baseUrl;
   private readonly client: Got;
 
   constructor() {

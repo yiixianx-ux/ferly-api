@@ -1,19 +1,19 @@
 import { Injectable, Logger } from '@nestjs/common';
 import got, { Response } from 'got';
 import { FastifyReply } from 'fastify';
+import { CONFIG } from '../config.js';
 
 @Injectable()
 export class ProxyService {
   private readonly logger = new Logger(ProxyService.name);
 
-  async proxyImage(url: string, res: FastifyReply, customReferer?: string) {
-    let referer = customReferer || 'https://hstream.moe/';
+  private getRefererFromUrl(url: string): string {
+    const refererMatch = CONFIG.proxy.referers.find((r) => url.includes(r.host));
+    return refererMatch ? refererMatch.referer : CONFIG.proxy.defaultReferer;
+  }
 
-    // Fallback logic jika tidak ada custom referer
-    if (!customReferer) {
-      if (url.includes('muchohentai.com')) referer = 'https://muchohentai.com/';
-      if (url.includes('oppai.stream')) referer = 'https://oppai.stream/';
-    }
+  async proxyImage(url: string, res: FastifyReply, customReferer?: string) {
+    const referer = customReferer || this.getRefererFromUrl(url);
 
     try {
       const stream = got.stream(url, {
@@ -40,7 +40,7 @@ export class ProxyService {
   }
 
   async proxyStream(url: string, res: FastifyReply, customReferer?: string) {
-    const referer = customReferer || 'https://oppai.stream/';
+    const referer = customReferer || this.getRefererFromUrl(url);
 
     try {
       const stream = got.stream(url, {

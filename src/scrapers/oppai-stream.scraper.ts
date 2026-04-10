@@ -8,12 +8,13 @@ import {
 } from '../videos/dto/video.dto.js';
 import got, { Got } from 'got';
 import * as cheerio from 'cheerio';
+import { CONFIG } from '../config.js';
 
 @Injectable()
 export class OppaiStreamScraper extends BaseScraper {
   private readonly logger = new Logger(OppaiStreamScraper.name);
   readonly siteId = 'oppai';
-  readonly baseUrl = 'https://oppai.stream';
+  readonly baseUrl = CONFIG.scrapers.oppai.baseUrl;
   private readonly client: Got;
 
   constructor() {

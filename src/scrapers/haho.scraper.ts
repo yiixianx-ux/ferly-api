@@ -8,12 +8,13 @@ import {
 } from '../videos/dto/video.dto.js';
 import got, { Got } from 'got';
 import * as cheerio from 'cheerio';
+import { CONFIG } from '../config.js';
 
 @Injectable()
 export class HahoScraper extends BaseScraper {
   private readonly logger = new Logger(HahoScraper.name);
   readonly siteId = 'haho';
-  readonly baseUrl = 'https://haho.moe';
+  readonly baseUrl = CONFIG.scrapers.haho.baseUrl;
   private readonly client: Got;
 
   constructor() {
@@ -76,11 +77,11 @@ export class HahoScraper extends BaseScraper {
       if (!a.length) return;
 
       const href = a.attr('href') || '';
-      // For video items, slug is more complex, but we'll take the part before /ep
       const urlObj = new URL(href, this.baseUrl);
-      const pathParts = urlObj.pathname.split('/').filter(Boolean);
-      // /anime/slug/ep -> slug
-      const slug = pathParts[1] || '';
+      // For video items, slug should be the path after /anime/
+      const slug = urlObj.pathname.startsWith('/anime/')
+        ? urlObj.pathname.substring(7) + urlObj.search
+        : urlObj.pathname.substring(1) + urlObj.search;
 
       const title = $(el).find('.anime-title').text().trim();
       const epTitle = $(el).find('.episode-title').text().trim();
@@ -126,15 +127,21 @@ export class HahoScraper extends BaseScraper {
 
   async getStreamLink(slug: string): Promise<StreamInfoDto> {
     try {
-      // 1. Get detail page to find first episode or embed
+      // 1. Get detail page or episode page
       const html = await this.client.get(`anime/${slug}`).text();
       const $ = cheerio.load(html);
 
       let embedUrl = $('iframe[src*="/embed?v="]').attr('src');
 
       if (!embedUrl) {
-        // Try to find first episode link
-        const firstEp = $('.playlist-episodes li a').first().attr('href');
+        // Try to find first episode link (using .episode-loop for newer site structure)
+        let firstEp = $('.episode-loop li a').first().attr('href');
+
+        if (!firstEp) {
+          // Fallback to older selector
+          firstEp = $('.playlist-episodes li a').first().attr('href');
+        }
+
         if (firstEp) {
           const epHtml = await this.client
             .get(firstEp.replace(this.baseUrl + '/', ''))

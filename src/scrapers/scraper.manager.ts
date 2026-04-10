@@ -25,23 +25,28 @@ export class ScraperManager {
     query: string,
     page = 1,
   ): Promise<MultiSiteSearchResponseDto> {
-    const cacheKey = `search:${query}:${page}`;
+    const normalizedQuery = query.trim().toLowerCase().replace(/\+/g, ' ');
+    const cacheKey = `search:${normalizedQuery.replace(/\s+/g, '_')}:${page}`;
     const cached =
       await this.cacheManager.get<MultiSiteSearchResponseDto>(cacheKey);
 
     if (cached) {
-      this.logger.log(`[Cache] Returning cached results for: ${query}`);
+      this.logger.log(
+        `[Cache] Returning cached results for: ${normalizedQuery}`,
+      );
       return cached;
     }
 
-    this.logger.log(`[Scraper] Searching for "${query}" on all sites...`);
+    this.logger.log(
+      `[Scraper] Searching for "${normalizedQuery}" on all sites...`,
+    );
     const results: Record<string, VideoBaseDto[]> = {};
     const combined: VideoBaseDto[] = [];
 
     const tasks = Array.from(this.scrapers.entries()).map(
       async ([id, scraper]) => {
         try {
-          const siteResults = await scraper.search(query, page);
+          const siteResults = await scraper.search(normalizedQuery, page);
           results[id] = siteResults;
           combined.push(...siteResults);
         } catch (error) {
@@ -50,7 +55,6 @@ export class ScraperManager {
         }
       },
     );
-
     await Promise.allSettled(tasks);
 
     const response = { combined, bySite: results };

@@ -28,7 +28,8 @@ Ferly API is an ESM-first NestJS application designed for efficient web scraping
 ### Identified Improvement Areas
 
 - **Background Error Handling**: The `saveVideosBackground` method in `VideosService` should have explicit `.catch()` blocks to prevent unhandled promise rejections.
-- **Input Validation**: Controllers should be strictly typed with DTOs and validated using `ValidationPipe`.
+- **Input Validation**: Controllers use Zod for schema definitions and type safety. Internal validation is performed using Zod schemas.
+- **Request Transformation**: `ValidationPipe` with `transform: true` is used globally for basic query parameter transformation (e.g., string to number).
 - **Scraper Robustness**: Some scrapers (e.g., `HStreamScraper`) rely on complex token extraction from HTML. These should have more descriptive error messages and fallback mechanisms.
 - **Proxy Configuration**: Move hardcoded referers in `ProxyService` to a centralized configuration file or environment variables.
 

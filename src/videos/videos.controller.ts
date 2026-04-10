@@ -15,10 +15,10 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import {
-  VideoBaseDto,
-  VideoDetailDto,
-  StreamInfoDto,
-  MultiSiteSearchResponseDto,
+  type VideoBaseDto,
+  type VideoDetailDto,
+  type StreamInfoDto,
+  type MultiSiteSearchResponseDto,
 } from './dto/video.dto.js';
 
 @ApiTags('Videos')
@@ -32,11 +32,11 @@ export class VideosController {
   @ApiResponse({
     status: 200,
     description: 'Latest videos grouped by site',
-    type: Object, // Returns Record<string, VideoBaseDto[]>
+    type: Object,
   })
   async getLatest(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-  ) {
+  ): Promise<Record<string, VideoBaseDto[]>> {
     return this.videosService.getLatest(page);
   }
 
@@ -47,12 +47,12 @@ export class VideosController {
   @ApiResponse({
     status: 200,
     description: 'Search results combined and by site',
-    type: MultiSiteSearchResponseDto,
+    type: Object,
   })
   async search(
     @Query('q') query: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-  ) {
+  ): Promise<MultiSiteSearchResponseDto> {
     return this.videosService.search(query, page);
   }
 
@@ -62,11 +62,11 @@ export class VideosController {
   @ApiResponse({
     status: 200,
     description: 'Randomly selected videos',
-    type: [VideoBaseDto],
+    type: [Object],
   })
   async getRandom(
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  ) {
+  ): Promise<any[]> {
     return this.videosService.getRandom(limit);
   }
 
@@ -77,12 +77,12 @@ export class VideosController {
   @ApiResponse({
     status: 200,
     description: 'Full video details',
-    type: VideoDetailDto,
+    type: Object,
   })
   async getDetails(
     @Param('siteId') siteId: string,
     @Param('slug') slug: string,
-  ) {
+  ): Promise<VideoDetailDto> {
     return this.videosService.getDetails(siteId, slug);
   }
 
@@ -93,9 +93,12 @@ export class VideosController {
   @ApiResponse({
     status: 200,
     description: 'Stream URLs and headers',
-    type: StreamInfoDto,
+    type: Object,
   })
-  async getWatch(@Param('siteId') siteId: string, @Param('slug') slug: string) {
+  async getWatch(
+    @Param('siteId') siteId: string,
+    @Param('slug') slug: string,
+  ): Promise<StreamInfoDto> {
     return this.videosService.getWatch(siteId, slug);
   }
 }

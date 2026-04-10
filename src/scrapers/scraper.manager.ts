@@ -28,7 +28,7 @@ export class ScraperManager {
     const cacheKey = `search:${query}:${page}`;
     const cached =
       await this.cacheManager.get<MultiSiteSearchResponseDto>(cacheKey);
-    
+
     if (cached) {
       this.logger.log(`[Cache] Returning cached results for: ${query}`);
       return cached;

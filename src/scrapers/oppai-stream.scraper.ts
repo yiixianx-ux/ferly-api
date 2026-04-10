@@ -30,29 +30,32 @@ export class OppaiStreamScraper extends BaseScraper {
     });
   }
 
-  async search(query: string, _page = 1): Promise<VideoBaseDto[]> {
+  async search(query: string): Promise<VideoBaseDto[]> {
     // oppai.stream menggunakan parameter 'search' di root
     const html = await this.client
-      .get('', { 
+      .get('', {
         searchParams: { search: query },
-        retry: { limit: 1 } 
+        retry: { limit: 1 },
       })
       .text();
-    
+
     const results = this.parseItems(html);
-    
+
     // Validasi sederhana: Jika kita mencari sesuatu, pastikan judulnya mengandung kata kunci
     // karena oppai sering fallback ke "Latest" jika tidak ditemukan
-    const filtered = results.filter(v => 
-      v.title.toLowerCase().includes(query.toLowerCase()) || 
-      query.toLowerCase().includes(v.title.toLowerCase())
+    const filtered = results.filter(
+      (v) =>
+        v.title.toLowerCase().includes(query.toLowerCase()) ||
+        query.toLowerCase().includes(v.title.toLowerCase()),
     );
 
-    this.logger.log(`Oppai found ${results.length} items, ${filtered.length} matched query "${query}"`);
+    this.logger.log(
+      `Oppai found ${results.length} items, ${filtered.length} matched query "${query}"`,
+    );
     return filtered;
   }
 
-  async getLatest(_page = 1): Promise<VideoBaseDto[]> {
+  async getLatest(): Promise<VideoBaseDto[]> {
     const html = await this.client.get('').text();
     return this.parseItems(html);
   }
@@ -131,7 +134,7 @@ export class OppaiStreamScraper extends BaseScraper {
                 }
               }
             }
-          } catch (_e) {
+          } catch {
             this.logger.warn('Failed to parse playerConfig JSON');
           }
         }

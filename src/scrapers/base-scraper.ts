@@ -18,7 +18,7 @@ export abstract class BaseScraper {
     return Promise.resolve([]);
   }
 
-  getByGenre(_genre: string, _page?: number): Promise<VideoBaseDto[]> {
+  getByGenre(): Promise<VideoBaseDto[]> {
     return Promise.resolve([]);
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import { VideosService } from './videos.service.js';
@@ -51,6 +52,7 @@ describe('VideosService', () => {
 
   it('should call scraperManager.getLatestAll on getLatest', async function (this: void) {
     const result = await service.getLatest(1);
+    expect(() => scraperManager.getLatestAll).toBeDefined();
     expect(scraperManager.getLatestAll).toHaveBeenCalledWith(1);
     expect(result).toEqual({ hstream: [], oppai: [] });
   });
@@ -58,6 +60,7 @@ describe('VideosService', () => {
   it('should call scraperManager.searchAll on search', async function (this: void) {
     const query = 'test';
     const result = await service.search(query, 1);
+    expect(() => scraperManager.searchAll).toBeDefined();
     expect(scraperManager.searchAll).toHaveBeenCalledWith(query, 1);
     expect(result).toEqual({ combined: [], bySite: {} });
   });

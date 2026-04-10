@@ -4,17 +4,17 @@ import { Injectable } from '@nestjs/common';
 export class AppService {
   getHello() {
     return {
-      name: 'Ferly API ✨',
+      name: 'Ferly API',
       version: '1.1.0',
       description: 'Unified Web Scraping & Video Access Layer',
-      status: 'Feeling cute and online! 🌸',
+      status: 'Feeling cute and online!',
       author: 'yiixian',
       environment: process.env.NODE_ENV || 'development',
       features: [
         'Multi-site Scraping (HStream, Oppai)',
-        'Smart Caching (1h TTL)',
-        'Local Database Persistence (SQLite)',
-        'Image & Stream Proxy',
+        'Smart Caching',
+        'Local Database Persistence',
+        'Image Proxy',
       ],
       endpoints: {
         docs: '/docs',
@@ -25,8 +25,7 @@ export class AppService {
       },
       stats: {
         scrapers: ['hstream', 'oppai'],
-        engine: 'NestJS v11 (ESM)',
-        runtime: 'NodeNext',
+        engine: 'NestJS',
       },
     };
   }

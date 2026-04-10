@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, Logger } from '@nestjs/common';
 import got from 'got';
 import { FastifyReply } from 'fastify';
@@ -23,6 +24,7 @@ export class ProxyService {
       stream.on('response', (response) => {
         void res.header(
           'Content-Type',
+          // @ts-expect-error - external lib headers any
           response.headers['content-type'] || 'image/jpeg',
         );
         void res.header('Cache-Control', 'public, max-age=86400'); // Cache 24 jam
@@ -48,6 +50,7 @@ export class ProxyService {
       stream.on('response', (response) => {
         void res.header(
           'Content-Type',
+          // @ts-expect-error - external lib headers any
           response.headers['content-type'] || 'video/mp4',
         );
       });

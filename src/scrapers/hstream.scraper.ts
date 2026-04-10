@@ -33,14 +33,17 @@ export class HStreamScraper extends BaseScraper {
     const url = `search?search=${encodeURIComponent(query)}&page=${page}`;
     const html = await this.client.get(url).text();
     const results = this.parseList(html);
-    
+
     // HStream sering mengembalikan halaman kosong atau Latest jika tidak ada hasil
-    const filtered = results.filter(v => 
-      v.title.toLowerCase().includes(query.toLowerCase()) || 
-      query.toLowerCase().includes(v.title.toLowerCase())
+    const filtered = results.filter(
+      (v) =>
+        v.title.toLowerCase().includes(query.toLowerCase()) ||
+        query.toLowerCase().includes(v.title.toLowerCase()),
     );
 
-    this.logger.log(`HStream found ${results.length} items, ${filtered.length} matched query "${query}"`);
+    this.logger.log(
+      `HStream found ${results.length} items, ${filtered.length} matched query "${query}"`,
+    );
     return filtered;
   }
 

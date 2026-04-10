@@ -26,6 +26,7 @@
     "better-sqlite3": "^12.8.0",
     "cache-manager": "^7.2.8",
     "cheerio": "^1.2.0",
+    "class-transformer": "^0.5.1",
     "drizzle-orm": "^0.45.2",
     "got": "^15.0.1",
     "nestjs-pino": "^4.6.1",

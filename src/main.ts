@@ -18,15 +18,6 @@ async function bootstrap() {
   // Use Pino Logger
   app.useLogger(app.get(Logger));
 
-  // Global Validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: false,
-    }),
-  );
-
   // Enable CORS
   app.enableCors();
 

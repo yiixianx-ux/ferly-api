@@ -61,13 +61,15 @@ export class OppaiStreamScraper extends BaseScraper {
   }
 
   async getDetails(slug: string): Promise<VideoDetailDto> {
-    const html = await this.client
-      .get('watch', { searchParams: { e: slug } })
-      .text();
+    const response = await this.client.get('watch', {
+      searchParams: { e: slug },
+    });
+    const html = response.body;
 
     if (
       html.includes('Before you can watch this') ||
-      html.includes('you must be logged in')
+      html.includes('you must be logged in') ||
+      response.url.includes('locked.php')
     ) {
       throw new Error('This video requires login to view (Login Wall)');
     }
@@ -102,13 +104,15 @@ export class OppaiStreamScraper extends BaseScraper {
 
   async getStreamLink(slug: string): Promise<StreamInfoDto> {
     try {
-      const html = await this.client
-        .get('watch', { searchParams: { e: slug } })
-        .text();
+      const response = await this.client.get('watch', {
+        searchParams: { e: slug },
+      });
+      const html = response.body;
 
       if (
         html.includes('Before you can watch this') ||
-        html.includes('you must be logged in')
+        html.includes('you must be logged in') ||
+        response.url.includes('locked.php')
       ) {
         throw new Error('This video requires login to view (Login Wall)');
       }

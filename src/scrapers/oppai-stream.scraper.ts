@@ -64,6 +64,14 @@ export class OppaiStreamScraper extends BaseScraper {
     const html = await this.client
       .get('watch', { searchParams: { e: slug } })
       .text();
+
+    if (
+      html.includes('Before you can watch this') ||
+      html.includes('you must be logged in')
+    ) {
+      throw new Error('This video requires login to view (Login Wall)');
+    }
+
     const $ = cheerio.load(html);
     const container = $('.episode-shown');
 
@@ -97,6 +105,14 @@ export class OppaiStreamScraper extends BaseScraper {
       const html = await this.client
         .get('watch', { searchParams: { e: slug } })
         .text();
+
+      if (
+        html.includes('Before you can watch this') ||
+        html.includes('you must be logged in')
+      ) {
+        throw new Error('This video requires login to view (Login Wall)');
+      }
+
       const $ = cheerio.load(html);
       const sources: StreamSourceDto[] = [];
 

@@ -1,16 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, Logger } from '@nestjs/common';
-import got from 'got';
+import got, { Response } from 'got';
 import { FastifyReply } from 'fastify';
 
 @Injectable()
 export class ProxyService {
   private readonly logger = new Logger(ProxyService.name);
 
-  async proxyImage(url: string, res: FastifyReply) {
-    let referer = 'https://hstream.moe/';
-    if (url.includes('muchohentai.com')) referer = 'https://muchohentai.com/';
-    if (url.includes('oppai.stream')) referer = 'https://oppai.stream/';
+  async proxyImage(url: string, res: FastifyReply, customReferer?: string) {
+    let referer = customReferer || 'https://hstream.moe/';
+
+    // Fallback logic jika tidak ada custom referer
+    if (!customReferer) {
+      if (url.includes('muchohentai.com')) referer = 'https://muchohentai.com/';
+      if (url.includes('oppai.stream')) referer = 'https://oppai.stream/';
+    }
 
     try {
       const stream = got.stream(url, {
@@ -21,11 +24,10 @@ export class ProxyService {
         retry: { limit: 2 },
       });
 
-      stream.on('response', (response) => {
-        void res.header(
-          'Content-Type',
-          response.headers['content-type'] || 'image/jpeg',
-        );
+      stream.on('response', (response: Response) => {
+        const contentType =
+          (response.headers['content-type'] as string) || 'image/jpeg';
+        void res.header('Content-Type', contentType);
         void res.header('Cache-Control', 'public, max-age=86400'); // Cache 24 jam
       });
 
@@ -37,20 +39,21 @@ export class ProxyService {
     }
   }
 
-  async proxyStream(url: string, res: FastifyReply) {
+  async proxyStream(url: string, res: FastifyReply, customReferer?: string) {
+    const referer = customReferer || 'https://oppai.stream/';
+
     try {
       const stream = got.stream(url, {
         headers: {
           'User-Agent': 'Mozilla/5.0',
-          Referer: 'https://oppai.stream/',
+          Referer: referer,
         },
       });
 
-      stream.on('response', (response) => {
-        void res.header(
-          'Content-Type',
-          response.headers['content-type'] || 'video/mp4',
-        );
+      stream.on('response', (response: Response) => {
+        const contentType =
+          (response.headers['content-type'] as string) || 'video/mp4';
+        void res.header('Content-Type', contentType);
       });
 
       return res.send(stream);

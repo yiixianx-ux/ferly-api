@@ -1,62 +1,46 @@
-# Project Overview
+# Project Context: Ferly API
 
-`ferly-api` is a server-side application built with the [NestJS](https://nestjs.com/) framework. Based on its dependencies, the project is designed for **web scraping, data extraction, and processing**.
+## 🏛️ Architecture Overview
 
-## Key Technologies
-- **Framework:** [NestJS](https://nestjs.com/) (v11)
-- **Language:** TypeScript (configured for ESM via `nodenext`)
-- **Database & ORM:** [Drizzle ORM](https://orm.drizzle.team/) with [Better-SQLite3](https://github.com/WiseLibs/better-sqlite3)
-- **Web Scraping/Interaction:** [Playwright](https://playwright.dev/), [Cheerio](https://cheerio.js.org/), and [Got](https://github.com/sindresorhus/got)
-- **Validation:** [Zod](https://zod.dev/)
-- **Logging:** [Pino](https://getpino.io/) via `nestjs-pino`
-- **Caching:** `cache-manager` with NestJS integration
+Ferly API is an ESM-first NestJS application designed for efficient web scraping and data aggregation.
 
-## Building and Running
+### Key Components
 
-The project uses standard `npm` scripts for lifecycle management:
+1.  **ScraperManager (`src/scrapers/scraper.manager.ts`)**:
+    - Central registry for all scrapers.
+    - Handles concurrent scraping tasks using `Promise.allSettled`.
+    - Implements caching to reduce redundant site requests.
 
-```bash
-# Install dependencies
-npm install
+2.  **VideosService (`src/videos/videos.service.ts`)**:
+    - Orchestrates between real-time scraping and local database persistence.
+    - Implements a "fire-and-forget" strategy for background indexing to ensure low latency for the end user.
 
-# Development (watch mode)
-npm run start:dev
+3.  **ProxyModule (`src/proxy/proxy.module.ts`)**:
+    - Essential for serving media content from external sites that enforce strict `Referer` checks.
+    - Uses streaming to minimize memory footprint.
 
-# Production build
-npm run build
+4.  **Database Layer (`src/database/schema.ts`)**:
+    - Uses SQLite for zero-configuration local storage.
+    - Schema is optimized for search and unique constraints on `site` + `slug`.
 
-# Run production build
-npm run start:prod
+## 🛡️ Security & Quality Standards
 
-# Linting and Formatting
-npm run lint
-npm run format
-```
+### Identified Improvement Areas
 
-## Testing
+- **Background Error Handling**: The `saveVideosBackground` method in `VideosService` should have explicit `.catch()` blocks to prevent unhandled promise rejections.
+- **Input Validation**: Controllers should be strictly typed with DTOs and validated using `ValidationPipe`.
+- **Scraper Robustness**: Some scrapers (e.g., `HStreamScraper`) rely on complex token extraction from HTML. These should have more descriptive error messages and fallback mechanisms.
+- **Proxy Configuration**: Move hardcoded referers in `ProxyService` to a centralized configuration file or environment variables.
 
-Testing is handled via [Jest](https://jestjs.io/):
+### Performance Strategy
 
-```bash
-# Unit tests
-npm run test
+- **ESM-First**: The project uses modern ESM modules for better performance and future-proofing.
+- **Fastify**: Chosen over Express for its significantly lower overhead.
+- **In-Memory Caching**: Responses are cached at the `ScraperManager` level to avoid repeated scraping for identical queries within a short window.
 
-# E2E tests
-npm run test:e2e
+## 🤝 Development Workflow
 
-# Test coverage
-npm run test:cov
-```
-
-## Development Conventions
-
-- **Architecture:** Follows standard NestJS modular architecture (Controllers, Services, Modules).
-- **Module System:** The project is configured as an **ESM-first** codebase (`"module": "nodenext"`).
-- **Code Style:** Enforced via ESLint and Prettier.
-- **Validation:** Use Zod for schema validation and type safety.
-- **Logging:** Use the `Pino` logger for high-performance structured logging.
-- **Database:** Drizzle ORM is used for type-safe database interactions with SQLite.
-
-### Web Scraping Strategy
-- The primary scraping engine is `got`.
-- For sites protected by Cloudflare, the scraper intelligently falls back to `playwright`.
+- Follow NestJS modular conventions.
+- Always use Drizzle for database operations to maintain type safety.
+- When adding a new scraper, extend `BaseScraper` and register it in `ScrapersModule`.
+- Prioritize `got` for scraping; only fallback to `playwright` (if integrated) for sites with heavy JS/protection.

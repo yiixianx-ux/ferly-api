@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import {
   drizzle,
   type BetterSQLite3Database,
@@ -17,9 +13,11 @@ export const DatabaseProvider: Provider = {
   provide: DRIZZLE,
   useFactory: (): BetterSQLite3Database<typeof schema> => {
     const dbPath = join(process.cwd(), 'data', 'fuby.db');
-    const sqlite = new Database(dbPath);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const sqlite = new (Database as any)(dbPath);
 
     // Create table if not exists (simple initialization logic)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
     sqlite.exec(`
       CREATE TABLE IF NOT EXISTS videos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,6 +33,7 @@ export const DatabaseProvider: Provider = {
       CREATE UNIQUE INDEX IF NOT EXISTS site_slug_idx ON videos (site, slug);
     `);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return drizzle(sqlite, { schema });
   },
 };

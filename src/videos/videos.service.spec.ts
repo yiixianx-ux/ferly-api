@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import { VideosService } from './videos.service.js';
@@ -19,6 +18,7 @@ describe('VideosService', () => {
     from: jest.fn().mockReturnThis(),
     orderBy: jest.fn().mockReturnThis(),
     limit: jest.fn().mockReturnThis(),
+    execute: jest.fn().mockResolvedValue({}),
   };
 
   const mockScraperManager = {
@@ -52,7 +52,9 @@ describe('VideosService', () => {
 
   it('should call scraperManager.getLatestAll on getLatest', async function (this: void) {
     const result = await service.getLatest(1);
-    expect(() => scraperManager.getLatestAll).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(scraperManager.getLatestAll).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(scraperManager.getLatestAll).toHaveBeenCalledWith(1);
     expect(result).toEqual({ hstream: [], oppai: [] });
   });
@@ -60,7 +62,9 @@ describe('VideosService', () => {
   it('should call scraperManager.searchAll on search', async function (this: void) {
     const query = 'test';
     const result = await service.search(query, 1);
-    expect(() => scraperManager.searchAll).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(scraperManager.searchAll).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(scraperManager.searchAll).toHaveBeenCalledWith(query, 1);
     expect(result).toEqual({ combined: [], bySite: {} });
   });

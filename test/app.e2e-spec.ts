@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Test, TestingModule } from '@nestjs/testing';
 import {
   FastifyAdapter,
@@ -6,6 +5,7 @@ import {
 } from '@nestjs/platform-fastify';
 import request from 'supertest';
 import { AppModule } from './../src/app.module.js';
+import { expect, it, describe, beforeEach, afterEach } from '@jest/globals';
 
 describe('AppController (e2e)', () => {
   let app: NestFastifyApplication;
@@ -27,7 +27,8 @@ describe('AppController (e2e)', () => {
       .get('/')
       .expect(200)
       .expect((res) => {
-        expect(res.body.name).toBe('Ferly API');
+        const body = res.body as Record<string, unknown>;
+        expect(body.name).toBe('Ferly API');
       });
   });
 

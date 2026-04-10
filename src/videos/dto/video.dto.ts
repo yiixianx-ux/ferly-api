@@ -1,50 +1,85 @@
-import { z } from 'zod';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export const VideoBaseSchema = z.object({
-  title: z.string(),
-  slug: z.string(),
-  thumbnail: z.string().optional(),
-  url: z.string().url(),
-  site: z.string(),
-  description: z.string().optional(),
-  genres: z.array(z.string()).default([]),
-});
+export class VideoBaseDto {
+  @ApiProperty({ example: 'Hentai Series Title' })
+  title!: string;
 
-export const VideoDetailSchema = VideoBaseSchema.extend({
-  embedUrl: z.string().url().optional(),
-  metadata: z.record(z.string(), z.any()).default({}),
-});
+  @ApiProperty({ example: 'hentai-series-slug' })
+  slug!: string;
 
-export const StreamSourceSchema = z.object({
-  file: z.string().url(),
-  label: z.string(),
-  type: z.string(),
-});
+  @ApiPropertyOptional({ example: 'https://example.com/thumb.jpg' })
+  thumbnail?: string;
 
-export const StreamInfoSchema = z.object({
-  sources: z.array(StreamSourceSchema).optional(),
-  m3u8: z.string().url().optional(),
-  mpd: z.string().url().optional(),
-  headers: z.record(z.string(), z.string()).optional(),
-});
+  @ApiProperty({ example: 'https://example.com/watch/slug' })
+  url!: string;
 
-export const SearchResponseSchema = z.object({
-  results: z.array(VideoBaseSchema),
-  total: z.number(),
-  page: z.number(),
-});
+  @ApiProperty({ example: 'hstream' })
+  site!: string;
 
-export const MultiSiteSearchResponseSchema = z.object({
-  combined: z.array(VideoBaseSchema),
-  bySite: z.record(z.string(), z.array(VideoBaseSchema)),
-});
+  @ApiPropertyOptional({ example: 'Description about the video' })
+  description?: string;
 
-// Infer types from schemas
-export type VideoBaseDto = z.infer<typeof VideoBaseSchema>;
-export type VideoDetailDto = z.infer<typeof VideoDetailSchema>;
-export type StreamSourceDto = z.infer<typeof StreamSourceSchema>;
-export type StreamInfoDto = z.infer<typeof StreamInfoSchema>;
-export type SearchResponseDto = z.infer<typeof SearchResponseSchema>;
-export type MultiSiteSearchResponseDto = z.infer<
-  typeof MultiSiteSearchResponseSchema
->;
+  @ApiProperty({ type: [String], default: [] })
+  genres: string[] = [];
+}
+
+export class VideoDetailDto extends VideoBaseDto {
+  @ApiPropertyOptional({ example: 'https://example.com/embed/123' })
+  embedUrl?: string;
+
+  @ApiProperty({ type: 'object', additionalProperties: true, default: {} })
+  metadata: Record<string, any> = {};
+}
+
+export class StreamSourceDto {
+  @ApiProperty({ example: 'https://example.com/video.mp4' })
+  file!: string;
+
+  @ApiProperty({ example: '720p' })
+  label!: string;
+
+  @ApiProperty({ example: 'video/mp4' })
+  type!: string;
+}
+
+export class StreamInfoDto {
+  @ApiPropertyOptional({ type: [StreamSourceDto] })
+  sources?: StreamSourceDto[];
+
+  @ApiPropertyOptional({ example: 'https://example.com/playlist.m3u8' })
+  m3u8?: string;
+
+  @ApiPropertyOptional({ example: 'https://example.com/manifest.mpd' })
+  mpd?: string;
+
+  @ApiPropertyOptional({
+    type: 'object',
+    additionalProperties: { type: 'string' },
+  })
+  headers?: Record<string, string>;
+}
+
+export class SearchResponseDto {
+  @ApiProperty({ type: [VideoBaseDto] })
+  results!: VideoBaseDto[];
+
+  @ApiProperty({ example: 100 })
+  total!: number;
+
+  @ApiProperty({ example: 1 })
+  page!: number;
+}
+
+export class MultiSiteSearchResponseDto {
+  @ApiProperty({ type: [VideoBaseDto] })
+  combined!: VideoBaseDto[];
+
+  @ApiProperty({
+    type: 'object',
+    additionalProperties: {
+      type: 'array',
+      items: { $ref: '#/components/schemas/VideoBaseDto' },
+    },
+  })
+  bySite!: Record<string, VideoBaseDto[]>;
+}

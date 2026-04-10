@@ -63,7 +63,7 @@ export class VideosService {
   private saveVideosBackground(videos: VideoBaseDto[]) {
     if (videos.length === 0) return;
 
-    // Fire and forget, don't await
+    // Fire and forget, but catch errors to prevent unhandled rejection
     void this.db
       .insert(schema.videos)
       .values(
@@ -87,6 +87,11 @@ export class VideosService {
           lastUpdated: sql`CURRENT_TIMESTAMP`,
         },
       })
-      .run();
+      .execute()
+      .catch((err) => {
+        this.logger.error(
+          `Failed to save videos to background database: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      });
   }
 }

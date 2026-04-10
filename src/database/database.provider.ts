@@ -17,11 +17,9 @@ export const DatabaseProvider: Provider = {
   provide: DRIZZLE,
   useFactory: (): BetterSQLite3Database<typeof schema> => {
     const dbPath = join(process.cwd(), 'data', 'fuby.db');
-    // @ts-expect-error - better-sqlite3 types
     const sqlite = new Database(dbPath);
 
     // Create table if not exists (simple initialization logic)
-    // @ts-expect-error - better-sqlite3 types
     sqlite.exec(`
       CREATE TABLE IF NOT EXISTS videos (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,7 +35,6 @@ export const DatabaseProvider: Provider = {
       CREATE UNIQUE INDEX IF NOT EXISTS site_slug_idx ON videos (site, slug);
     `);
 
-    // @ts-expect-error - drizzle init types
     return drizzle(sqlite, { schema });
   },
 };

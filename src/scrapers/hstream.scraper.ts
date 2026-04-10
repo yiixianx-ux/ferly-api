@@ -84,15 +84,31 @@ export class HStreamScraper extends BaseScraper {
     try {
       const response = await this.client.get(`hentai/${slug}`);
       const html = response.body;
+
+      if (html.includes('Please login to view this hentai')) {
+        throw new Error('This video requires login to view (Login Wall)');
+      }
+
       const $ = cheerio.load(html);
 
       // Extract episode ID from various possible locations
       let episodeId = $('#e_id').val()?.toString();
       if (!episodeId) {
-        const match = html.match(
+        // Try multiple regex patterns for different possible structures
+        const patterns = [
           /"class":"App\\\\Models\\\\Episode","key":(\d+)/,
-        );
-        episodeId = match ? match[1] : undefined;
+          /&quot;class&quot;:&quot;App\\\\Models\\\\Episode&quot;,&quot;key&quot;:(\d+)/,
+          /&quot;key&quot;:(\d+)/,
+          /"key":(\d+)/,
+        ];
+
+        for (const pattern of patterns) {
+          const match = html.match(pattern);
+          if (match) {
+            episodeId = match[1];
+            break;
+          }
+        }
       }
 
       if (!episodeId) throw new Error('Episode ID not found');

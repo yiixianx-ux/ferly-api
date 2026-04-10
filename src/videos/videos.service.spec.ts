@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import { VideosService } from './videos.service.js';
 import { ScraperManager } from '../scrapers/scraper.manager.js';
 import { DRIZZLE } from '../database/database.provider.js';
@@ -48,13 +49,13 @@ describe('VideosService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should call scraperManager.getLatestAll on getLatest', async () => {
+  it('should call scraperManager.getLatestAll on getLatest', async function (this: void) {
     const result = await service.getLatest(1);
     expect(scraperManager.getLatestAll).toHaveBeenCalledWith(1);
     expect(result).toEqual({ hstream: [], oppai: [] });
   });
 
-  it('should call scraperManager.searchAll on search', async () => {
+  it('should call scraperManager.searchAll on search', async function (this: void) {
     const query = 'test';
     const result = await service.search(query, 1);
     expect(scraperManager.searchAll).toHaveBeenCalledWith(query, 1);

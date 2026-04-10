@@ -1,4 +1,9 @@
-import { sqliteTable, integer, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import {
+  sqliteTable,
+  integer,
+  text,
+  uniqueIndex,
+} from 'drizzle-orm/sqlite-core';
 import { sql } from 'drizzle-orm';
 
 export const videos = sqliteTable(

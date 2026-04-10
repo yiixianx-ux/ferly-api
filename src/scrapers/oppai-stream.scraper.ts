@@ -1,6 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { BaseScraper } from './base-scraper.js';
-import { VideoBaseDto, VideoDetailDto, StreamInfoDto, StreamSourceDto } from '../videos/dto/video.dto.js';
+import {
+  VideoBaseDto,
+  VideoDetailDto,
+  StreamInfoDto,
+  StreamSourceDto,
+} from '../videos/dto/video.dto.js';
 import got, { Got } from 'got';
 import * as cheerio from 'cheerio';
 
@@ -16,26 +21,31 @@ export class OppaiStreamScraper extends BaseScraper {
     this.client = got.extend({
       prefixUrl: this.baseUrl,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': this.baseUrl,
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        Referer: this.baseUrl,
       },
       timeout: { request: 30000 },
       followRedirect: true,
     });
   }
 
-  async search(query: string, page = 1): Promise<VideoBaseDto[]> {
-    const html = await this.client.get('', { searchParams: { search: query } }).text();
+  async search(query: string, _page = 1): Promise<VideoBaseDto[]> {
+    const html = await this.client
+      .get('', { searchParams: { search: query } })
+      .text();
     return this.parseItems(html);
   }
 
-  async getLatest(page = 1): Promise<VideoBaseDto[]> {
+  async getLatest(_page = 1): Promise<VideoBaseDto[]> {
     const html = await this.client.get('').text();
     return this.parseItems(html);
   }
 
   async getDetails(slug: string): Promise<VideoDetailDto> {
-    const html = await this.client.get('watch', { searchParams: { e: slug } }).text();
+    const html = await this.client
+      .get('watch', { searchParams: { e: slug } })
+      .text();
     const $ = cheerio.load(html);
     const container = $('.episode-shown');
 
@@ -43,7 +53,8 @@ export class OppaiStreamScraper extends BaseScraper {
       throw new Error(`Details not found for slug: ${slug}`);
     }
 
-    const title = `${container.attr('name') || ''} ${container.attr('ep') || ''}`.trim();
+    const title =
+      `${container.attr('name') || ''} ${container.attr('ep') || ''}`.trim();
     const description = container.attr('desc') || '';
     const genres = (container.attr('tags') || '').split(',').filter(Boolean);
     const imgEl = container.find('img.cover-img-in');
@@ -54,7 +65,9 @@ export class OppaiStreamScraper extends BaseScraper {
       slug,
       site: this.siteId,
       url: `${this.baseUrl}/watch?e=${slug}`,
-      thumbnail: thumbnail.startsWith('http') ? thumbnail : `${this.baseUrl}${thumbnail}`,
+      thumbnail: thumbnail.startsWith('http')
+        ? thumbnail
+        : `${this.baseUrl}${thumbnail}`,
       description,
       genres,
       metadata: {},
@@ -63,7 +76,9 @@ export class OppaiStreamScraper extends BaseScraper {
 
   async getStreamLink(slug: string): Promise<StreamInfoDto> {
     try {
-      const html = await this.client.get('watch', { searchParams: { e: slug } }).text();
+      const html = await this.client
+        .get('watch', { searchParams: { e: slug } })
+        .text();
       const $ = cheerio.load(html);
       const sources: StreamSourceDto[] = [];
 
@@ -80,12 +95,16 @@ export class OppaiStreamScraper extends BaseScraper {
       });
 
       // 2. Extract from playerConfig JSON in script tags
-      const scripts = $('script').map((_, el) => $(el).html()).get();
+      const scripts = $('script')
+        .map((_, el) => $(el).html())
+        .get();
       for (const script of scripts) {
         const match = script?.match(/playerConfig\s*=\s*({.*?});/s);
         if (match) {
           try {
-            const config = JSON.parse(match[1]);
+            const config = JSON.parse(match[1]) as {
+              sources?: Array<{ file?: string; label?: string; type?: string }>;
+            };
             if (config.sources) {
               for (const s of config.sources) {
                 if (s.file) {
@@ -97,7 +116,7 @@ export class OppaiStreamScraper extends BaseScraper {
                 }
               }
             }
-          } catch (e) {
+          } catch (_e) {
             this.logger.warn('Failed to parse playerConfig JSON');
           }
         }
@@ -105,7 +124,7 @@ export class OppaiStreamScraper extends BaseScraper {
 
       // 3. Regex fallback for m3u8
       const m3u8Match = html.match(/["']?(https?:\/\/[^"']+\.m3u8[^"']*)["']?/);
-      if (m3u8Match && !sources.some(s => s.file === m3u8Match[1])) {
+      if (m3u8Match && !sources.some((s) => s.file === m3u8Match[1])) {
         sources.push({
           file: m3u8Match[1],
           label: 'HLS',
@@ -115,7 +134,7 @@ export class OppaiStreamScraper extends BaseScraper {
 
       return {
         sources,
-        m3u8: sources.find(s => s.file.includes('.m3u8'))?.file,
+        m3u8: sources.find((s) => s.file.includes('.m3u8'))?.file,
       };
     } catch (error) {
       this.logger.error(`Failed to get stream for ${slug}`, error);
@@ -150,7 +169,10 @@ export class OppaiStreamScraper extends BaseScraper {
         slug,
         site: this.siteId,
         url: `${this.baseUrl}/watch?e=${slug}`,
-        thumbnail: thumb && thumb.startsWith('/') ? `${this.baseUrl}${thumb}` : thumb || '',
+        thumbnail:
+          thumb && thumb.startsWith('/')
+            ? `${this.baseUrl}${thumb}`
+            : thumb || '',
         description: $item.attr('desc') || '',
         genres: ($item.attr('tags') || '').split(',').filter(Boolean),
       });

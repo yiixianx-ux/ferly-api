@@ -17,20 +17,20 @@ export class VideosService {
 
   async getLatest(page = 1) {
     const results = await this.scraperManager.getLatestAll(page);
-    
+
     // Background save to DB
     const allItems = Object.values(results).flat();
-    this.saveVideosBackground(allItems);
-    
+    void this.saveVideosBackground(allItems);
+
     return results;
   }
 
   async search(query: string, page = 1): Promise<MultiSiteSearchResponseDto> {
     const results = await this.scraperManager.searchAll(query, page);
-    
+
     // Background save to DB
-    this.saveVideosBackground(results.combined);
-    
+    void this.saveVideosBackground(results.combined);
+
     return results;
   }
 
@@ -46,10 +46,10 @@ export class VideosService {
     if (!scraper) throw new Error(`Site ${siteId} not found`);
 
     const details = await scraper.getDetails(slug);
-    
+
     // Background save
-    this.saveVideosBackground([details]);
-    
+    void this.saveVideosBackground([details]);
+
     return details;
   }
 
@@ -60,11 +60,11 @@ export class VideosService {
     return scraper.getStreamLink(slug);
   }
 
-  private async saveVideosBackground(videos: VideoBaseDto[]) {
+  private saveVideosBackground(videos: VideoBaseDto[]) {
     if (videos.length === 0) return;
 
     // Fire and forget, don't await
-    this.db
+    void this.db
       .insert(schema.videos)
       .values(
         videos.map((v) => ({

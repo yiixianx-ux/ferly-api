@@ -4,11 +4,7 @@ import { HStreamScraper } from './hstream.scraper.js';
 import { OppaiStreamScraper } from './oppai-stream.scraper.js';
 
 @Module({
-  providers: [
-    ScraperManager,
-    HStreamScraper,
-    OppaiStreamScraper,
-  ],
+  providers: [ScraperManager, HStreamScraper, OppaiStreamScraper],
   exports: [ScraperManager],
 })
 export class ScrapersModule implements OnModuleInit {

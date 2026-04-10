@@ -45,4 +45,6 @@ export type VideoDetailDto = z.infer<typeof VideoDetailSchema>;
 export type StreamSourceDto = z.infer<typeof StreamSourceSchema>;
 export type StreamInfoDto = z.infer<typeof StreamInfoSchema>;
 export type SearchResponseDto = z.infer<typeof SearchResponseSchema>;
-export type MultiSiteSearchResponseDto = z.infer<typeof MultiSiteSearchResponseSchema>;
+export type MultiSiteSearchResponseDto = z.infer<
+  typeof MultiSiteSearchResponseSchema
+>;

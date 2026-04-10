@@ -1,4 +1,8 @@
-import { VideoBaseDto, VideoDetailDto, StreamInfoDto } from '../videos/dto/video.dto.js';
+import {
+  VideoBaseDto,
+  VideoDetailDto,
+  StreamInfoDto,
+} from '../videos/dto/video.dto.js';
 
 export abstract class BaseScraper {
   abstract readonly siteId: string;
@@ -8,13 +12,13 @@ export abstract class BaseScraper {
   abstract getDetails(slug: string): Promise<VideoDetailDto>;
   abstract getLatest(page?: number): Promise<VideoBaseDto[]>;
   abstract getStreamLink(slug: string): Promise<StreamInfoDto>;
-  
+
   // Optional: override jika site punya genre khusus
-  async getGenres(): Promise<string[]> {
-    return [];
+  getGenres(): Promise<string[]> {
+    return Promise.resolve([]);
   }
 
-  async getByGenre(genre: string, page?: number): Promise<VideoBaseDto[]> {
-    return [];
+  getByGenre(_genre: string, _page?: number): Promise<VideoBaseDto[]> {
+    return Promise.resolve([]);
   }
 }

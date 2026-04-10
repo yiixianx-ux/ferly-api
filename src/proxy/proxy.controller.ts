@@ -1,4 +1,10 @@
-import { Controller, Get, Query, Res, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  Res,
+  BadRequestException,
+} from '@nestjs/common';
 import { ProxyService } from './proxy.service.js';
 import type { FastifyReply } from 'fastify';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';

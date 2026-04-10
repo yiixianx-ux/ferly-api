@@ -15,12 +15,13 @@
     "noImplicitAny": false,
     "strictNullChecks": true,
     "removeComments": true,
-    // "incremental": false,
     "sourceMap": true,
     "outDir": "./dist",
     "skipLibCheck": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true
-  }
+    "forceConsistentCasingInFileNames": true,
+    "rootDir": "."
+  },
+  "include": ["src/**/*", "test/**/*", "**/*spec.ts"],
+  "exclude": ["node_modules", "dist"]
 }
-

@@ -31,7 +31,10 @@ export class VideosController {
 
   @Get('site/:siteId/details/:slug')
   @ApiOperation({ summary: 'Get video details with DB persistence' })
-  async getDetails(@Param('siteId') siteId: string, @Param('slug') slug: string) {
+  async getDetails(
+    @Param('siteId') siteId: string,
+    @Param('slug') slug: string,
+  ) {
     return this.videosService.getDetails(siteId, slug);
   }
 

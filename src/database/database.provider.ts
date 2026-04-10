@@ -1,14 +1,17 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import {
+  drizzle,
+  type BetterSQLite3Database,
+} from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
 import * as schema from './schema.js';
-import { Provider } from '@nestjs/common';
+import { type Provider } from '@nestjs/common';
 import { join } from 'path';
 
 export const DRIZZLE = 'DRIZZLE';
 
 export const DatabaseProvider: Provider = {
   provide: DRIZZLE,
-  useFactory: () => {
+  useFactory: (): BetterSQLite3Database<typeof schema> => {
     const dbPath = join(process.cwd(), 'data', 'fuby.db');
     const sqlite = new Database(dbPath);
 

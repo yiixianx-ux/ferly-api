@@ -31,10 +31,25 @@ export class OppaiStreamScraper extends BaseScraper {
   }
 
   async search(query: string, _page = 1): Promise<VideoBaseDto[]> {
+    // oppai.stream menggunakan parameter 'search' di root
     const html = await this.client
-      .get('', { searchParams: { search: query } })
+      .get('', { 
+        searchParams: { search: query },
+        retry: { limit: 1 } 
+      })
       .text();
-    return this.parseItems(html);
+    
+    const results = this.parseItems(html);
+    
+    // Validasi sederhana: Jika kita mencari sesuatu, pastikan judulnya mengandung kata kunci
+    // karena oppai sering fallback ke "Latest" jika tidak ditemukan
+    const filtered = results.filter(v => 
+      v.title.toLowerCase().includes(query.toLowerCase()) || 
+      query.toLowerCase().includes(v.title.toLowerCase())
+    );
+
+    this.logger.log(`Oppai found ${results.length} items, ${filtered.length} matched query "${query}"`);
+    return filtered;
   }
 
   async getLatest(_page = 1): Promise<VideoBaseDto[]> {

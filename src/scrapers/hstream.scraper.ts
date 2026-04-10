@@ -32,7 +32,16 @@ export class HStreamScraper extends BaseScraper {
   async search(query: string, page = 1): Promise<VideoBaseDto[]> {
     const url = `search?search=${encodeURIComponent(query)}&page=${page}`;
     const html = await this.client.get(url).text();
-    return this.parseList(html);
+    const results = this.parseList(html);
+    
+    // HStream sering mengembalikan halaman kosong atau Latest jika tidak ada hasil
+    const filtered = results.filter(v => 
+      v.title.toLowerCase().includes(query.toLowerCase()) || 
+      query.toLowerCase().includes(v.title.toLowerCase())
+    );
+
+    this.logger.log(`HStream found ${results.length} items, ${filtered.length} matched query "${query}"`);
+    return filtered;
   }
 
   async getLatest(page = 1): Promise<VideoBaseDto[]> {

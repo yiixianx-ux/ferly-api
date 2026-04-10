@@ -28,8 +28,13 @@ export class ScraperManager {
     const cacheKey = `search:${query}:${page}`;
     const cached =
       await this.cacheManager.get<MultiSiteSearchResponseDto>(cacheKey);
-    if (cached) return cached;
+    
+    if (cached) {
+      this.logger.log(`[Cache] Returning cached results for: ${query}`);
+      return cached;
+    }
 
+    this.logger.log(`[Scraper] Searching for "${query}" on all sites...`);
     const results: Record<string, VideoBaseDto[]> = {};
     const combined: VideoBaseDto[] = [];
 

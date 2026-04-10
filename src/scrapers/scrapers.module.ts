@@ -2,9 +2,10 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { ScraperManager } from './scraper.manager.js';
 import { HStreamScraper } from './hstream.scraper.js';
 import { OppaiStreamScraper } from './oppai-stream.scraper.js';
+import { HahoScraper } from './haho.scraper.js';
 
 @Module({
-  providers: [ScraperManager, HStreamScraper, OppaiStreamScraper],
+  providers: [ScraperManager, HStreamScraper, OppaiStreamScraper, HahoScraper],
   exports: [ScraperManager],
 })
 export class ScrapersModule implements OnModuleInit {
@@ -12,10 +13,12 @@ export class ScrapersModule implements OnModuleInit {
     private readonly manager: ScraperManager,
     private readonly hstream: HStreamScraper,
     private readonly oppai: OppaiStreamScraper,
+    private readonly haho: HahoScraper,
   ) {}
 
   onModuleInit() {
     this.manager.registerScraper(this.hstream);
     this.manager.registerScraper(this.oppai);
+    this.manager.registerScraper(this.haho);
   }
 }
